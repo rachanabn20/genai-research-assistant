@@ -1,0 +1,1 @@
+"""Prompt templates for the GenAI engine."""

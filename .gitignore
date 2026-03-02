@@ -1,0 +1,42 @@
+# Environment variables (contains your API keys — NEVER commit)
+.env
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE settings
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Uploaded PDFs (user data — do not commit)
+uploads/*
+!uploads/.gitkeep
+
+# ChromaDB local storage
+chroma_db/
+
+# Testing artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Logs
+*.log
