@@ -30,6 +30,10 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["Research Paper Assistant"])
 
 
+# ===============================
+# Health Check
+# ===============================
+
 @router.get(
     "/health",
     response_model=HealthResponse,
@@ -37,8 +41,8 @@ router = APIRouter(prefix="/api/v1", tags=["Research Paper Assistant"])
 )
 async def health_check():
     """
-    Returns the application status. Deployment platforms and load
-    balancers call this endpoint to verify the application is alive.
+    Returns the application status.
+    Used by deployment platforms and monitoring systems.
     """
     settings = get_settings()
     return HealthResponse(
@@ -47,6 +51,10 @@ async def health_check():
         environment=settings.app_env,
     )
 
+
+# ===============================
+# Upload Paper
+# ===============================
 
 @router.post(
     "/papers/upload",
@@ -60,13 +68,6 @@ async def upload_paper(
     api_key: str = Depends(verify_api_key),
     rag_service: RAGService = Depends(get_rag),
 ):
-    """
-    Upload a PDF research paper for processing.
-
-    The paper is validated, text is extracted, split into chunks,
-    embedded, and stored in the vector database. Returns a paper_id
-    that you use for all subsequent queries.
-    """
     try:
         content = await file.read()
         result = await rag_service.ingest_paper(
@@ -85,12 +86,17 @@ async def upload_paper(
                 f"Use paper_id '{result['paper_id']}' for queries."
             ),
         )
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error("upload_failed", error=str(e))
         raise HTTPException(status_code=500, detail=f"Failed to process paper: {str(e)}")
 
+
+# ===============================
+# Ask Question
+# ===============================
 
 @router.post(
     "/papers/question",
@@ -104,18 +110,16 @@ async def ask_question(
     api_key: str = Depends(verify_api_key),
     rag_service: RAGService = Depends(get_rag),
 ):
-    """
-    Ask a specific question about an uploaded research paper.
-    The system retrieves relevant sections and generates an answer
-    grounded in the actual paper content.
-    """
     try:
         clean_question = sanitize_input(question_request.question)
+
         result = await rag_service.ask_question(
             paper_id=question_request.paper_id,
             question=clean_question,
         )
+
         return AnswerResponse(**result)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except RuntimeError as e:
@@ -124,6 +128,10 @@ async def ask_question(
         logger.error("question_failed", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ===============================
+# Analyze Paper
+# ===============================
 
 @router.post(
     "/papers/analyze",
@@ -137,16 +145,14 @@ async def analyze_paper(
     api_key: str = Depends(verify_api_key),
     rag_service: RAGService = Depends(get_rag),
 ):
-    """
-    Get AI-generated analysis of a paper.
-    Available types: summarize, key_findings, methodology.
-    """
     try:
         result = await rag_service.analyze_paper(
             paper_id=analysis_request.paper_id,
             analysis_type=analysis_request.analysis_type.value,
         )
+
         return AnalysisResponse(**result)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except RuntimeError as e:
