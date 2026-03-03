@@ -20,16 +20,22 @@ from core.logging_config import setup_logging, get_logger
 from core.security import limiter
 
 
-# ==============================
+# ==========================================
+# Load settings ONCE (important for CI)
+# ==========================================
+
+settings = get_settings()
+
+
+# ==========================================
 # Lifespan Events
-# ==============================
+# ==========================================
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Runs on application startup and shutdown."""
     setup_logging()
     log = get_logger("app.main")
-    settings = get_settings()
 
     log.info(
         "application_starting",
@@ -43,11 +49,9 @@ async def lifespan(app: FastAPI):
     log.info("application_shutting_down")
 
 
-# ==============================
+# ==========================================
 # App Initialization
-# ==============================
-
-settings = get_settings()
+# ==========================================
 
 app = FastAPI(
     title=settings.app_name,
@@ -63,9 +67,9 @@ app = FastAPI(
 )
 
 
-# ==============================
+# ==========================================
 # Middleware
-# ==============================
+# ==========================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,9 +84,9 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-# ==============================
+# ==========================================
 # Global Exception Handler
-# ==============================
+# ==========================================
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -105,17 +109,13 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# ==============================
-# Root Endpoint (Required for CI)
-# ==============================
+# ==========================================
+# Root Endpoint (CI Critical)
+# ==========================================
 
 @app.get("/", tags=["Root"])
 async def root():
-    """
-    Returns application information.
-    Used by CI tests and monitoring systems.
-    """
-    settings = get_settings()
+    """Return application information."""
     return {
         "name": settings.app_name,
         "version": settings.app_version,
@@ -124,16 +124,16 @@ async def root():
     }
 
 
-# ==============================
+# ==========================================
 # Include API Routes
-# ==============================
+# ==========================================
 
 app.include_router(router)
 
 
-# ==============================
+# ==========================================
 # Serve Frontend (Optional)
-# ==============================
+# ==========================================
 
 static_dir = Path(__file__).parent.parent / "static"
 
