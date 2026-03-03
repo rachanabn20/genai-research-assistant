@@ -1,4 +1,4 @@
-"""Tests for API route endpoints."""
+﻿"""Tests for API route endpoints."""
 
 from fastapi.testclient import TestClient
 from app.main import app
@@ -6,8 +6,6 @@ from core.config import get_settings
 
 client = TestClient(app)
 settings = get_settings()
-
-VALID_HEADERS = {"X-API-Key": settings.api_key_secret}
 
 
 class TestHealthEndpoint:
