@@ -5,7 +5,6 @@ Uses sentence-transformers to generate embeddings locally.
 No API calls. No rate limits. No cost. Runs on your CPU.
 """
 
-from sentence_transformers import SentenceTransformer
 from core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -15,14 +14,14 @@ class EmbeddingService:
     """Generates text embeddings locally using sentence-transformers."""
 
     def __init__(self):
-        # This model is small (80MB), fast, and good quality
-        # It downloads automatically on first run
+        # Lazy import to prevent CI failures
+        from sentence_transformers import SentenceTransformer
+
         logger.info("loading_embedding_model")
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
         logger.info("embedding_model_loaded", model="all-MiniLM-L6-v2")
 
     def get_embedding(self, text: str) -> list[float]:
-        """Convert a single text string into a vector embedding."""
         text = text.replace("\n", " ").strip()
         if not text:
             text = "empty"
@@ -31,12 +30,7 @@ class EmbeddingService:
         return embedding.tolist()
 
     def get_embeddings_batch(self, texts: list[str]) -> list[list[float]]:
-        """
-        Convert multiple texts into embeddings in one batch.
-        This is very fast locally — no network calls needed.
-        """
         cleaned = [t.replace("\n", " ").strip() or "empty" for t in texts]
-
         embeddings = self.model.encode(cleaned)
 
         logger.info(
