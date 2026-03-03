@@ -6,7 +6,7 @@ Coordinates the full pipeline:
   Query:  Question -> Search similar chunks -> LLM generates answer
 """
 
-from typing import Optional
+#from typing import Optional
 
 from core.logging_config import get_logger
 from app.services.pdf_service import get_pdf_service
