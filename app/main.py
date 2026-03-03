@@ -9,8 +9,8 @@ app = FastAPI(
     version=settings.app_version,
 )
 
-@app.get("/")
-def root():
+@app.get("/", tags=["Root"])
+async def root():
     return {
         "app": settings.app_name,
         "version": settings.app_version,
@@ -18,4 +18,4 @@ def root():
         "docs": "/docs",
     }
 
-app.include_router(router)
+app.include_router(router, prefix="/api/v1")
