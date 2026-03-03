@@ -45,15 +45,15 @@ Groq LLM (LLaMA 3.1) --> AI Response
 | CI/CD | [GitHub Actions](https://github.com/features/actions) |
 
 ## Quick Start
-
-
-
+```bash
 git clone https://github.com/rachanabn20/genai-research-assistant.git
 cd genai-research-assistant
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 copy .env.example .env
+# Edit .env: add your GROQ_API_KEY and set API_KEY_SECRET
+python -m uvicorn app.main:app --reload --port 8000
 # Edit .env: add your GROQ_API_KEY and set API_KEY_SECRET
 python -m uvicorn app.main:app --reload --port 8000
 
