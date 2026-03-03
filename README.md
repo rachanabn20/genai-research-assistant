@@ -1,3 +1,15 @@
+---
+title: AI Research Paper Assistant
+emoji: 📄
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+
+---
+
+
 # AI Research Paper Assistant
 
 An AI-powered research paper analysis tool built with FastAPI, OpenAI GPT-4o-mini,
